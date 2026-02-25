@@ -7,7 +7,7 @@ import numpy as np
 #configuration
 
 #main dataset folder
-BASE_FOLDER = "pill_dataset"
+BASE_FOLDER = "../data/pill_dataset"
 
 #folder for generated images
 IMAGE_FOLDER = os.path.join(BASE_FOLDER, "images")
@@ -27,7 +27,7 @@ MAX_PILLS = 60
 MAX_RETRIES = 500
 
 #folder with pill png file
-PILL_FOLDER = "Projects/LFC/CSCI-450/pill_library"
+PILL_FOLDER = "../data/pill_lib"
 
 #create image folder if needed
 os.makedirs(IMAGE_FOLDER, exist_ok=True)
