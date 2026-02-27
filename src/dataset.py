@@ -1,55 +1,51 @@
-import os #for folder and file
-import cv2 #image processing
+import os
+import cv2
 import csv
 import random
 import numpy as np
 
 #configuration
 
-#main dataset folder
-BASE_FOLDER = "../data/pill_dataset"
-
-#folder for generated images
+BASE_FOLDER = "pills_set"
 IMAGE_FOLDER = os.path.join(BASE_FOLDER, "images")
-
-#csv file for labels
 CSV_PATH = os.path.join(BASE_FOLDER, "labels.csv")
 
-
 IMAGE_SIZE = 640
-TOTAL_IMAGES = 10000
+TOTAL_IMAGES = 15000
 
-#min and max pills per image
 MIN_PILLS = 40
 MAX_PILLS = 60
 
-#max placement tries
-MAX_RETRIES = 500
+MAX_RETRIES = 300
 
-#folder with pill png file
-PILL_FOLDER = "../data/pill_lib"
+PILL_FOLDER = "Projects/LFC/CSCI-450/pill_library"
 
-#create image folder if needed
 os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
-#load pill images
+#load pills
+
 pill_images = []
+pill_names = []
 
 for file in os.listdir(PILL_FOLDER):
     if file.lower().endswith(".png"):
         img = cv2.imread(os.path.join(PILL_FOLDER, file), cv2.IMREAD_UNCHANGED)
-        pill_images.append(img)
+        if img is not None and img.shape[2] == 4:
+            pill_images.append(img)
+            pill_names.append(os.path.splitext(file)[0])
 
-print(f"loaded {len(pill_images)} pills")
+NUM_PILL_TYPES = len(pill_images)
+
+print(f"loaded {NUM_PILL_TYPES} pill types")
 
 #generate dataset
 
 with open(CSV_PATH, "w", newline="") as f:
-
     writer = csv.writer(f)
 
     #write header
-    writer.writerow(["image_name", "pill_count"])
+    header = ["image_name"] + pill_names + ["total"]
+    writer.writerow(header)
 
     img_index = 0
 
@@ -59,12 +55,12 @@ with open(CSV_PATH, "w", newline="") as f:
         #make background
         base_color = random.randint(225, 255)
         canvas = np.ones((IMAGE_SIZE, IMAGE_SIZE, 3), dtype=np.uint8) * base_color
-
-        #mask to stop overlap
         occupancy_mask = np.zeros((IMAGE_SIZE, IMAGE_SIZE), dtype=np.uint8)
 
         #random number of pills
         target_count = random.randint(MIN_PILLS, MAX_PILLS)
+
+        pill_type_counts = [0] * NUM_PILL_TYPES
 
         placed = 0
         attempts = 0
@@ -73,18 +69,18 @@ with open(CSV_PATH, "w", newline="") as f:
         while placed < target_count and attempts < target_count * MAX_RETRIES:
 
             #pick random pill
-            pill = random.choice(pill_images)
+            pill_idx = random.randint(0, NUM_PILL_TYPES - 1)
+            pill = pill_images[pill_idx]
 
             #random rotate and scale
             angle = random.uniform(0, 360)
-            scale = random.uniform(0.9, 1.1)
+            scale = random.uniform(0.6, 1.0)
 
             h, w = pill.shape[:2]
 
             #rotation matrix
             M = cv2.getRotationMatrix2D((w//2, h//2), angle, scale)
 
-            #new size after rotate
             cos = abs(M[0,0])
             sin = abs(M[0,1])
             new_w = int(h*sin + w*cos)
@@ -101,14 +97,14 @@ with open(CSV_PATH, "w", newline="") as f:
                 borderValue=(0,0,0,0)
             )
 
-            #get alpha mask
-            alpha = transformed[:,:,3]
-            pill_mask = (alpha > 0).astype(np.uint8) * 255 #255 where pill exists, 0 where no pill to check overlap
-
             #skip if too big
             if new_w >= IMAGE_SIZE or new_h >= IMAGE_SIZE:
                 attempts += 1
                 continue
+
+            #get alpha mask
+            alpha = transformed[:,:,3]
+            pill_mask = (alpha > 0).astype(np.uint8) * 255
 
             #try random positions
             for _ in range(MAX_RETRIES):
@@ -116,13 +112,13 @@ with open(CSV_PATH, "w", newline="") as f:
                 x = random.randint(0, IMAGE_SIZE - new_w)
                 y = random.randint(0, IMAGE_SIZE - new_h)
 
-                roi = occupancy_mask[y:y+new_h, x:x+new_w] #region of interst
+                roi = occupancy_mask[y:y+new_h, x:x+new_w]
 
                 #check overlap
-                if not np.any(cv2.bitwise_and(roi, pill_mask)): #if no overlap, then place 
+                if not np.any(cv2.bitwise_and(roi, pill_mask)):
 
                     #blend pill
-                    roi_color = canvas[y:y+new_h, x:x+new_w] #blends pill with background, otherwise edges look harsh
+                    roi_color = canvas[y:y+new_h, x:x+new_w]
                     alpha_norm = alpha / 255.0
 
                     for c in range(3):
@@ -138,6 +134,7 @@ with open(CSV_PATH, "w", newline="") as f:
                         occupancy_mask[y:y+new_h, x:x+new_w], pill_mask)
 
                     placed += 1
+                    pill_type_counts[pill_idx] += 1
                     break
 
             attempts += 1
@@ -148,8 +145,7 @@ with open(CSV_PATH, "w", newline="") as f:
             continue
 
         #add noise
-        #mean = 0; standard deviation = 3; shape = same shape as image
-        noise = np.random.normal(0, 3, canvas.shape).astype(np.int16) #A normal distribution is the same thing as a Gaussian distribution.
+        noise = np.random.normal(0, 3, canvas.shape).astype(np.int16)
         canvas = np.clip(canvas.astype(np.int16) + noise, 0, 255).astype(np.uint8)
 
         #save image
@@ -157,9 +153,9 @@ with open(CSV_PATH, "w", newline="") as f:
         cv2.imwrite(os.path.join(IMAGE_FOLDER, filename), canvas)
 
         #write label
-        writer.writerow([filename, placed])
+        writer.writerow([filename] + pill_type_counts + [placed])
 
-        #progress print for every 50 images
+        #progress print
         if (img_index+1) % 50 == 0:
             print(f"{img_index+1}/{TOTAL_IMAGES} done")
 
