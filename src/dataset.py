@@ -4,9 +4,11 @@ import csv
 import random
 import numpy as np
 
+random.seed(49)
+
 #configuration
 
-BASE_FOLDER = "pills_set"
+BASE_FOLDER = "../data/pill_dataset"
 IMAGE_FOLDER = os.path.join(BASE_FOLDER, "images")
 CSV_PATH = os.path.join(BASE_FOLDER, "labels.csv")
 
@@ -18,7 +20,7 @@ MAX_PILLS = 60
 
 MAX_RETRIES = 300
 
-PILL_FOLDER = "Projects/LFC/CSCI-450/pill_library"
+PILL_FOLDER = "../data/pill_lib"
 
 os.makedirs(IMAGE_FOLDER, exist_ok=True)
 
