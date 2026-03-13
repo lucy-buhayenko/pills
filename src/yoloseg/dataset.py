@@ -5,7 +5,6 @@ Generates YOLOv8 segmentation labels.
 import cv2
 import shutil
 import pandas as pd
-from pathlib import Path
 from sklearn.cluster import KMeans
 
 from map import get_colors, build_map

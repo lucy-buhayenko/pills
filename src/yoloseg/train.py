@@ -12,11 +12,11 @@ def train(model_path, yaml_file):
 
     results = model.train(
         data=str(yaml_file),
-        epochs=30, 
-        imgsz=640,
-        batch=16,
-        project='runs/pills',
-        name='yolov8n'
+        epochs=EPOCHS, 
+        imgsz=IMG_SIZE,
+        batch=BATCH_SIZE,
+        project=RESULTS_DIR,
+        name=MODEL_NAME
     )
 
 if __name__ == "__main__":

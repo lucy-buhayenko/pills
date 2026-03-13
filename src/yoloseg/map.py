@@ -3,7 +3,6 @@ Maps segmented pills to respective classes.
 '''
 
 import numpy as np
-from pathlib import Path
 import cv2
 from sklearn.cluster import KMeans
 from scipy.optimize import linear_sum_assignment as lsa

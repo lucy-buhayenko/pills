@@ -21,6 +21,13 @@ YOLO_TEST_DIR = YOLO_IMAGES_DIR / "test"
 YAML_FILE = YOLO_DIR / "pills.yaml"
 
 MODEL = "yolov8n-seg.pt"
+RESULTS_DIR = "runs/pills"
+MODEL_NAME = "yolov8n"
+
+EPOCHS = 30
+IMG_SIZE = 640
+BATCH_SIZE = 16
+
 MODEL_PATH = "runs/pills/yolov8n/weights/best.pt"
 
 TRAIN_RATIO = 0.75
