@@ -1,3 +1,5 @@
 pill_dataset
+features/*
+__pycache__
 .ipynb_checkpoints
 .DS_Store
