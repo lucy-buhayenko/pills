@@ -39,7 +39,8 @@ def process_images_in_parallel(path, imageList, extract_features, num_processes=
         print('\rProcessed ' + str(min(batch_start + batch_size, len(imageList))) + ' of ' + str(len(imageList)), end='')
 
     print('\nCombining batches...')
-    features = np.memmap(save_path, dtype='float64', mode='w+', shape=(len(imageList), feature_size))
+    temp_path = save_path.replace('.npy', '_temp.dat')
+    features = np.memmap(temp_path, dtype='float64', mode='w+', shape=(len(imageList), feature_size))
 
     idx = 0
     for f in batch_files:
@@ -49,8 +50,12 @@ def process_images_in_parallel(path, imageList, extract_features, num_processes=
         del batch
 
     assert features.shape[0] == len(imageList), "Missing images in final features!"
-    print('Features matrix shape: ', features.shape)
+    np.save(save_path, np.array(features))
+    del features
+    os.remove(temp_path)
+
+    print('Features matrix shape: ', np.load(save_path).shape)
     for f in batch_files:
         os.remove(f)
 
-    return features
+    return np.load(save_path)
