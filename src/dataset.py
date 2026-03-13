@@ -1,8 +1,13 @@
+'''
+Synthesizes a dataset of pill on plain background.
+'''
+
 import os
 import cv2
 import csv
 import random
 import numpy as np
+
 
 random.seed(49)
 
