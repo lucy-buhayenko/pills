@@ -9,18 +9,8 @@ from pathlib import Path
 from sklearn.cluster import KMeans
 
 from map import get_colors, build_map
+from config import *
 
-
-DATA_DIR = Path("../../data/pill_dataset")
-IMAGES_DIR = DATA_DIR / "images"
-SEGMENTED_DIR = DATA_DIR / "segmented"
-LABELS_CSV = DATA_DIR / "labels.csv"
-
-YOLO_DIR = DATA_DIR / "yolo_dataset"
-YOLO_IMAGES_DIR = YOLO_DIR / "images"
-YOLO_LABELS_DIR = YOLO_DIR / "labels"
-
-PILL_CLASSES = ['pill9', 'pill8', 'pill5', 'pill4', 'pill6', 'pill7', 'pill3', 'pill2', 'pill1']
 
 def gen_dataset(df, kmeans, mapping):
     for i, row in df.iterrows():

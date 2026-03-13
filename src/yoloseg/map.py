@@ -8,17 +8,8 @@ import cv2
 from sklearn.cluster import KMeans
 from scipy.optimize import linear_sum_assignment as lsa
 
+from confif import *
 
-DATA_DIR = Path("../../data/pill_dataset")
-IMAGES_DIR = DATA_DIR / "images"
-SEGMENTED_DIR = DATA_DIR / "segmented"
-LABELS_CSV = DATA_DIR / "labels.csv"
-
-YOLO_DIR = DATA_DIR / "yolo_dataset"
-YOLO_IMAGES_DIR = YOLO_DIR / "images"
-YOLO_LABELS_DIR = YOLO_DIR / "labels"
-
-PILL_CLASSES = ['pill9', 'pill8', 'pill5', 'pill4', 'pill6', 'pill7', 'pill3', 'pill2', 'pill1']
         
 def get_colors(img_name):
     segmented_path = SEGMENTED_DIR / img_name
