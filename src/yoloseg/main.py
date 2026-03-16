@@ -2,7 +2,10 @@
 Entrypoint.
 '''
 
+import pandas as pd
+
 from config import *
+from map import build_map
 from dataset import gen_dataset
 from split import split_dataset, move_files
 from build_yaml import build_yaml

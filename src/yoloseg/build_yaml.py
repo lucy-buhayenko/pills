@@ -23,4 +23,4 @@ def build_yaml(yolo_dir, classes_file, yaml_file):
         
 
 if __name__ == "__main__":
-    build_yaml(YOLO_DIR, CLASSES_FILE, YAML_FILE)
+    build_yaml(YOLO_DIR, YOLO_CLASSES_FILE, YAML_FILE)

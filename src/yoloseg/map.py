@@ -7,7 +7,7 @@ import cv2
 from sklearn.cluster import KMeans
 from scipy.optimize import linear_sum_assignment as lsa
 
-from confif import *
+from config import *
 
         
 def get_colors(img_name):
